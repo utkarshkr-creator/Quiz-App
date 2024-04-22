@@ -3,7 +3,7 @@ import { IoManager } from "./managers/IoManager";
 
 
 export class Quiz {
-    private roomId: string;
+    public roomId: string;
     private hasStarted: boolean;
     private problems: Problem[];
     private activeProblem: number;
@@ -15,27 +15,33 @@ export class Quiz {
         this.problems = [];
         this.activeProblem = 0;
         this.users=[];
-        this.currentStates=currentStatesEnum.Leaderboard
+        this.currentStates=currentStatesEnum.Not_Started
     }
     addProblem(problem: Problem) {
         this.problems.push(problem);
     }
     start() {
         this.hasStarted = true;
+        if(!this.problems[0]){
+            throw new Error("Problem not Added")
+        }
         this.setActiveProblem(this.problems[0]);
     }
     setActiveProblem(problem:Problem){
         this.currentStates=currentStatesEnum.Question;
         problem.startTime=new Date().getTime();
         problem.submissions=[];
-        IoManager.getIo().to(this.roomId).emit("problem",{
+        console.log("roomId",this.roomId)
+        const res=Promise.resolve(IoManager.getIo().to(this.roomId).emit(currentStatesEnum.Question,{
             problem
-        })
+        }));
+        console.log("res",res);
         setTimeout(()=>{
             this.sendLeaderBoard();
         },PROBLEM_END_TIME*1000);
     }
     sendLeaderBoard(){
+        console.log("send Leaderboard called")
         this.currentStates=currentStatesEnum.Leaderboard;
         const leaderboard=this.getLeaderboard();//top 10
         IoManager.getIo().to(this.roomId).emit(currentStatesEnum.Leaderboard,{
@@ -46,7 +52,11 @@ export class Quiz {
         return this.users.sort((a,b)=>a.points<b.points?1:-1).slice(0,10);
     }
     next() {
+        if(!this.hasStarted){
+            throw new Error("Quiz not Started")
+        }
         this.activeProblem++;
+        this.currentStates=currentStatesEnum.Question
         const problem = this.problems[this.activeProblem];
         if (problem) {
            this.setActiveProblem(problem);
@@ -77,27 +87,43 @@ export class Quiz {
         })
         return id;
     }
-    submit(userId:string, roomId:string, problemId:string,submission:AllowedSubmission){
-        const problem=this.problems.find(x=>x.id===problemId);
-        const user=this.users.find(x=>x.id===userId);
-
-        if(!problem || !user){
+    submit(userId: string, roomId: string, problemId: string, submission: AllowedSubmission) {
+        const problemIndex = this.problems.findIndex(x => x.id === problemId);
+        const userIndex = this.users.findIndex(x => x.id === userId);
+    
+        if (problemIndex === -1 || userIndex === -1) {
             console.log("User or Problem not Found");
+            throw new Error("User or room not found");
         }
-        const existingSubmission=problem?.submissions.find(x=>x.userId===userId);
-        if(existingSubmission){
-            console.log("Allready Submitted");
-            return;
+    
+        const problem = this.problems[problemIndex];
+        const existingSubmission = problem.submissions.find(x => x.userId === userId && x.roomId === roomId);
+        if (existingSubmission) {
+            console.log("Already Submitted");
+            throw new Error("Already Submitted");
         }
-        problem?.submissions.push({
+    
+        problem.submissions.push({
             problemId,
-            userId, 
-            isCorrect:problem?.answer===submission,
-            optionSelected:submission
+            userId,
+            roomId,
+            isCorrect: problem.answer === submission,
+            optionSelected: submission
         });
-        // @ts-ignore
-        user?.points+= (1000 - (500 * (new Date().getTime() - problem.startTime) / (PROBLEM_TIME_S * 1000)));
+    
+        // Calculate points based on correctness and time
+        const timeElapsed = new Date().getTime() - problem.startTime;
+        const maxTime = PROBLEM_END_TIME * 1000;
+        const timeFactor = 1000 - (500 * timeElapsed / maxTime);
+        const pointsToAdd = problem.answer === submission ? timeFactor : 0;
+    
+        console.log("user",this.users);
+        console.log("uss",this.users[userIndex]);
+        this.users[userIndex].points += pointsToAdd;
+    
+        console.log("User points updated:", this.users[userIndex].points);
     }
+    
     getCurrentState() {
         if (this.currentStates ===currentStatesEnum.Not_Started) {
             return {

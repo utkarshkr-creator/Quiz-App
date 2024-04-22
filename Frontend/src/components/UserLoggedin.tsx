@@ -38,7 +38,7 @@ export const UserLoggedin = ({ code, name }: { code: string, name: string }) => 
       setLeaderBoard(data.leaderboard);
     });
 
-    socket.on(currentStateType.Problem, (data: any) => {
+    socket.on(currentStateType.Question, (data: any) => {
       setCurrentState(currentStateType.Question);
       setCurrentQuestion(data.problem);
     });
@@ -61,7 +61,6 @@ export const UserLoggedin = ({ code, name }: { code: string, name: string }) => 
         title: currentQuestion?.description,
         options: currentQuestion?.options,
       }}
-      setCurrentState
       socket={socket}
     />
   }

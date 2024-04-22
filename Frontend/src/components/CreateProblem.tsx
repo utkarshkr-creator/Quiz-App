@@ -25,7 +25,7 @@ export const CreateProblem = ({ socket, roomId }: { socket: any; roomId: string;
     setOptions(optionIntialState);
     setAnswer(0);
   }, [reset])
-  return <div>
+  return <div className="">
     Create problem
     Title = <input type="text" onChange={(e) => {
       setTitle(e.target.value)
@@ -41,7 +41,7 @@ export const CreateProblem = ({ socket, roomId }: { socket: any; roomId: string;
         setAnswer(optionId)
       }}></input>
       Option {optionId}
-      <input type="text" onChange={(e) => {
+      <input type="text" className="m-3" onChange={(e) => {
         setOptions(options => options.map(x => {
           if (x.id === optionId) {
             return {
@@ -55,8 +55,9 @@ export const CreateProblem = ({ socket, roomId }: { socket: any; roomId: string;
       <br />
     </div>)}
 
-    <button onClick={() => {
-      socket.emit("createProblem", {
+    <button onClick={async () => {
+      console.log("create Problem clicked");
+      await socket.emit("createProblem", {
         roomId,
         problem: {
           title,
@@ -66,7 +67,7 @@ export const CreateProblem = ({ socket, roomId }: { socket: any; roomId: string;
         }
       });
       setReset(!reset);
-    }}>Add problem</button>
+    }} className="bg-red-200 w-1/4">Add problem</button>
 
   </div>
 }

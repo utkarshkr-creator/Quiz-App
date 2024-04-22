@@ -35,8 +35,14 @@ export const Admin = () => {
     </div>
   }
   return (
-    <div>
+    <div className="flex flex-col">
       <CreateProblem roomId={quizId} socket={socket} />
+      <button className="w-1/4 m-3 bg-blue-500" type="submit" onClick={async () => {
+        console.log("start called")
+        await socket.emit("start", {
+          roomId
+        })
+      }}>Start Test</button>
       <QuizControls socket={socket} roomId={roomId} />
     </div>
   )

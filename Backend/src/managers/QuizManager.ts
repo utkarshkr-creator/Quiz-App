@@ -1,6 +1,6 @@
 import { AllowedSubmission } from "../CommonTypes";
 import { Quiz } from "../Quiz";
-import { IoManager } from "./IoManager";
+
 let globalProblemId = 0;
 export class QuizManager {
     private quizes: Quiz[];
@@ -26,7 +26,7 @@ export class QuizManager {
     }) {
         const quiz = this.getQuiz(roomId);
         if (!quiz) {
-            return;
+            throw new Error("Invalid Room Id");
         }
         quiz.addProblem({
             ...problem,
@@ -38,7 +38,7 @@ export class QuizManager {
     public next(roomId: string) {
         const quiz = this.getQuiz(roomId);
         if (!quiz) {
-            return;
+            throw new Error("Invalid RoomId")
         }
         quiz.next();
     }
@@ -48,21 +48,22 @@ export class QuizManager {
     }
 
     submit(userId: string, roomId: string, problemId: string, submission: AllowedSubmission) {
+        console.log("here");
         this.getQuiz(roomId)?.submit(userId, roomId, problemId, submission);
     }
     getQuiz(roomId: string) {
-        // @ts-ignore
-        return this.quizes.find(x => x.roomId === roomId) ?? null;
+        
+        return this.quizes.find((x) => x.roomId === roomId) ?? null;
     }
     addQuiz(roomId:string){
         if(this.getQuiz(roomId)){
+            console.log("Quiz already created")
             return;
         }
         const quiz=new Quiz(roomId);
         this.quizes.push(quiz);
     }
-    getCurrentState(roomId:string){
-         // @ts-ignore
+    getCurrentState(roomId:string){ 
         const quiz=this.quizes.find(x=>x.roomId===roomId);
         if(!quiz){
             return null;

@@ -1,19 +1,16 @@
-import { Socket } from "socket.io";
-import { QuizManager } from "./QuizManager";
-import { ADMIN_PASSWORD, AllowedSubmission } from "../CommonTypes";
-
-export class UserManager{
-    private quizManager;
-
-    constructor(){
-        this.quizManager=new QuizManager();
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.UserManager = void 0;
+const QuizManager_1 = require("./QuizManager");
+const CommonTypes_1 = require("../CommonTypes");
+class UserManager {
+    constructor() {
+        this.quizManager = new QuizManager_1.QuizManager();
     }
-
-    addUser(socket:Socket){
+    addUser(socket) {
         this.createHandlers(socket);
     }
-
-    private createHandlers(socket: Socket) {
+    createHandlers(socket) {
         socket.on("joinUser", (data) => {
             console.log("User joined");
             const userId = this.quizManager.addUser(data.roomId, data.name);
@@ -23,60 +20,56 @@ export class UserManager{
             });
             socket.join(data.roomId);
         });
-    
         socket.on("joinAdmin", (data) => {
             console.log("admin");
-            if (data.password !== ADMIN_PASSWORD) {
+            if (data.password !== CommonTypes_1.ADMIN_PASSWORD) {
                 return;
             }
-           
         });
         socket.on("createQuiz", data => {
             try {
                 this.quizManager.addQuiz(data.roomId);
-            } catch (e) {
+            }
+            catch (e) {
                 console.error("Error creating quiz:", e);
             }
         });
-        socket.on("start",data =>{
-            console.log("start",data.roomId)
+        socket.on("start", data => {
+            console.log("start", data.roomId);
             try {
-                this.quizManager.start(data.roomId)
-            } catch (error) {
-                console.error("Error in starting quiz")
+                this.quizManager.start(data.roomId);
             }
-        })
+            catch (error) {
+                console.error("Error in starting quiz");
+            }
+        });
         socket.on("createProblem", data => {
             console.log(data);
             try {
                 this.quizManager.addProblem(data.roomId, data.problem);
-            } catch (e) {
+            }
+            catch (e) {
                 console.error("Error creating problem:", e);
             }
         });
-
         socket.on("next", data => {
             console.log("next problem");
             try {
                 this.quizManager.next(data.roomId);
-            } catch (e) {
+            }
+            catch (e) {
                 console.error("Error moving to next problem:", e);
             }
         });
-    
-        socket.on("submit", (data: {
-            userId: string,
-            problemId: string,
-            submission: AllowedSubmission,
-            roomId: string
-        }) => {
+        socket.on("submit", (data) => {
             try {
                 const { userId, problemId, submission, roomId } = data;
                 this.quizManager.submit(userId, roomId, problemId, submission);
-            } catch (e) {
+            }
+            catch (e) {
                 console.error("Error submitting quiz:", e);
             }
         });
     }
-    
 }
+exports.UserManager = UserManager;

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Submited } from './Submite';
 export function Quiz({ quizData, socket, userId, problemId, roomId }: {
   quizData: {
     title: string;
@@ -12,6 +13,7 @@ export function Quiz({ quizData, socket, userId, problemId, roomId }: {
   const [submitted, setSubmitted] = useState(false);
   const [submission, setSubmission] = useState(0);
   console.log(quizData);
+
   return (
     <div className="">
       <div className="p-2 flex w-full justify-center lg:max-w-3xl mx-auto">
@@ -26,15 +28,16 @@ export function Quiz({ quizData, socket, userId, problemId, roomId }: {
             <button
               className="bg-[#2C2C2D] text-white w-64 px-8 py-4 rounded-full shadow-md hover:bg-[#2c2c2df1] focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 cursor-pointer"
               disabled={submitted}
-              onClick={() => {
+              onClick={async () => {
                 setSubmitted(true);
                 console.log("submite", submission)
-                socket.emit("submit", {
+                await socket.emit("submit", {
                   userId,
                   problemId,
                   submission: Number(submission),
                   roomId,
                 })
+                return <Submited />
               }}
             >
               Submit
