@@ -9,9 +9,9 @@ export const Admin = () => {
   const [socket, setSocket] = useState<null | any>(null);
   const [quizId, setQuizId] = useState("");
   const [roomId, setRoomId] = useState("");
+  const [start, setStart] = useState(false);
   useEffect(() => {
     const socket = io("http://localhost:3000");
-    console.log(socket)
     setSocket(socket);
     socket.on("connect", () => {
       socket.emit("joinAdmin", {
@@ -35,15 +35,25 @@ export const Admin = () => {
     </div>
   }
   return (
-    <div className="flex flex-col">
+    < div className="flex flex-col w-full sm:w-1/2 p-2" >
+      <div className="text-4xl font-bold text-zinc-600 my-2 flex justify-center">Room ID: {roomId}</div>
       <CreateProblem roomId={quizId} socket={socket} />
-      <button className="w-1/4 m-3 bg-blue-500" type="submit" onClick={async () => {
-        console.log("start called")
-        await socket.emit("start", {
-          roomId
-        })
-      }}>Start Test</button>
-      <QuizControls socket={socket} roomId={roomId} />
+      <div className="flex flex-row w-full">
+        {!start && <button
+          className="w-1/4 m-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md shadow-md"
+          type="submit"
+          disabled={start}
+          onClick={async () => {
+            await socket.emit("start", {
+              roomId
+            })
+            setStart(true)
+          }}
+        >
+          Start Test
+        </button>}
+        {start && <QuizControls socket={socket} roomId={roomId} />}
+      </div >
     </div>
   )
 }

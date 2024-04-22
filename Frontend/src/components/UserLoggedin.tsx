@@ -23,7 +23,6 @@ export const UserLoggedin = ({ code, name }: { code: string, name: string }) => 
     //@ts-ignore
     socket.on("init", ({ userId, state }) => {
       setUserId(userId);
-      console.log(state);
       if (state.leaderboard) {
         setLeaderBoard(state.leaderboard);
       }
@@ -44,7 +43,6 @@ export const UserLoggedin = ({ code, name }: { code: string, name: string }) => 
     });
 
   }, []);
-  console.log(currentState);
   if (currentState === currentStateType.Not_Started) {
     return <div>
       This quiz hasn't started Yet
@@ -52,13 +50,13 @@ export const UserLoggedin = ({ code, name }: { code: string, name: string }) => 
   }
 
   if (currentState === currentStateType.Question) {
-    console.log("quiz dta", currentQuestion)
     return <Quiz
       roomId={roomId}
       userId={userId}
       problemId={currentQuestion?.id}
       quizData={{
-        title: currentQuestion?.description,
+        title: currentQuestion?.title,
+        description: currentQuestion.description,
         options: currentQuestion?.options,
       }}
       socket={socket}
