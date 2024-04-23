@@ -12,7 +12,6 @@ class UserManager {
     }
     createHandlers(socket) {
         socket.on("joinUser", (data) => {
-            console.log("User joined");
             const userId = this.quizManager.addUser(data.roomId, data.name);
             socket.emit("init", {
                 userId,
@@ -21,7 +20,6 @@ class UserManager {
             socket.join(data.roomId);
         });
         socket.on("joinAdmin", (data) => {
-            console.log("admin");
             if (data.password !== CommonTypes_1.ADMIN_PASSWORD) {
                 return;
             }
@@ -35,7 +33,6 @@ class UserManager {
             }
         });
         socket.on("start", data => {
-            console.log("start", data.roomId);
             try {
                 this.quizManager.start(data.roomId);
             }
@@ -44,7 +41,6 @@ class UserManager {
             }
         });
         socket.on("createProblem", data => {
-            console.log(data);
             try {
                 this.quizManager.addProblem(data.roomId, data.problem);
             }
@@ -53,7 +49,6 @@ class UserManager {
             }
         });
         socket.on("next", data => {
-            console.log("next problem");
             try {
                 this.quizManager.next(data.roomId);
             }

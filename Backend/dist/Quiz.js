@@ -26,17 +26,14 @@ class Quiz {
         this.currentStates = CommonTypes_1.currentStatesEnum.Question;
         problem.startTime = new Date().getTime();
         problem.submissions = [];
-        console.log("roomId", this.roomId);
         const res = Promise.resolve(IoManager_1.IoManager.getIo().to(this.roomId).emit(CommonTypes_1.currentStatesEnum.Question, {
             problem
         }));
-        console.log("res", res);
         setTimeout(() => {
             this.sendLeaderBoard();
         }, CommonTypes_1.PROBLEM_END_TIME * 1000);
     }
     sendLeaderBoard() {
-        console.log("send Leaderboard called");
         this.currentStates = CommonTypes_1.currentStatesEnum.Leaderboard;
         const leaderboard = this.getLeaderboard(); //top 10
         IoManager_1.IoManager.getIo().to(this.roomId).emit(CommonTypes_1.currentStatesEnum.Leaderboard, {
@@ -74,6 +71,9 @@ class Quiz {
         return result;
     }
     addUser(name) {
+        const user = this.users.find(x => x.name == name);
+        if (user)
+            return user === null || user === void 0 ? void 0 : user.id;
         const id = this.getRandomString(7);
         this.users.push({
             id,
@@ -107,10 +107,7 @@ class Quiz {
         const maxTime = CommonTypes_1.PROBLEM_END_TIME * 1000;
         const timeFactor = 1000 - (500 * timeElapsed / maxTime);
         const pointsToAdd = problem.answer === submission ? timeFactor : 0;
-        console.log("user", this.users);
-        console.log("uss", this.users[userIndex]);
         this.users[userIndex].points += pointsToAdd;
-        console.log("User points updated:", this.users[userIndex].points);
     }
     getCurrentState() {
         if (this.currentStates === CommonTypes_1.currentStatesEnum.Not_Started) {

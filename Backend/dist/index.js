@@ -6,6 +6,5 @@ const io = IoManager_1.IoManager.getIo();
 io.listen(3000);
 const userManager = new UserManager_1.UserManager();
 io.on('connection', (socket) => {
-    console.log("reaced here");
     userManager.addUser(socket);
 });

@@ -76,6 +76,9 @@ export class Quiz {
   }
 
   addUser(name: string) {
+    const user=this.users.find(x=>x.name==name);
+    if(user)
+      return user?.id;
     const id = this.getRandomString(7);
     this.users.push({
       id,

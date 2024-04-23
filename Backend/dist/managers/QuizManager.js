@@ -34,7 +34,6 @@ class QuizManager {
     }
     submit(userId, roomId, problemId, submission) {
         var _a;
-        console.log("here");
         (_a = this.getQuiz(roomId)) === null || _a === void 0 ? void 0 : _a.submit(userId, roomId, problemId, submission);
     }
     getQuiz(roomId) {

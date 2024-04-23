@@ -20,19 +20,28 @@ export const Admin = () => {
     });
   }, []);
   if (!quizId) {
-    return <div>
-      <input type="text" onChange={(e) => {
-        setRoomId(e.target.value)
-      }} />
+    return <div className="flex flex-col justify-center items-center">
+      <input
+        type="text"
+        placeholder="Enter Room Id"
+        onChange={(e) => {
+          setRoomId(e.target.value);
+        }}
+        className="w-80 p-4 my-4 rounded-xl bg-[#F4F4F6] text-left text-black outline-offset-2 outline-4 focus:outline outline-[#E8E9FF] focus:border focus:border-purple-500 hover:border "
+      />
       <br />
-      <button onClick={() => {
-        socket.emit("createQuiz", {
-          roomId
-        });
-        setQuizId(roomId);
-      }}>Create room</button>
-
-    </div>
+      <button
+        onClick={() => {
+          socket.emit("createQuiz", {
+            roomId,
+          });
+          setQuizId(roomId);
+        }}
+        className="bg-[#2C2C2D] text-white w-64 px-8 py-4 rounded-full shadow-md hover:bg-[#2c2c2df1] focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50"
+      >
+        Create room
+      </button>
+    </div >
   }
   return (
     < div className="flex flex-col w-full sm:w-1/2 p-2" >

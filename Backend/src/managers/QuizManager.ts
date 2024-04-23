@@ -48,7 +48,7 @@ export class QuizManager {
     }
 
     submit(userId: string, roomId: string, problemId: string, submission: AllowedSubmission) {
-        console.log("here");
+        
         this.getQuiz(roomId)?.submit(userId, roomId, problemId, submission);
     }
     getQuiz(roomId: string) {

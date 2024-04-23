@@ -37,7 +37,6 @@ export class UserManager {
       }
     });
     socket.on("start", data => {
-      console.log("start", data.roomId)
       try {
         this.quizManager.start(data.roomId)
       } catch (error) {
